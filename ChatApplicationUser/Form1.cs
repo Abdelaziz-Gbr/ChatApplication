@@ -58,6 +58,7 @@ namespace ChatApplicationUser
         private void btn_SendToAll_Click(object sender, EventArgs e)
         {
             string message = txtBox_MessageInput.Text;
+            txtBox_MessageInput.Clear();
             txtBox_Messages.Text += $"me({connection.getName()}) -> {message}{Environment.NewLine}";
             connection.SendMessageToAll(message);
         }

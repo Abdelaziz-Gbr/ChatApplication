@@ -69,7 +69,8 @@ namespace ChatApplication
 
         private void btn_SendToAll_Click(object sender, EventArgs e)
         {
-            string message =txtBox_MessageInpu.Text;
+            string message = txtBox_MessageInpu.Text;
+            txtBox_MessageInpu.Clear();
             txtBox_MessagesBox.Text += $"me(admin) -> {message}{Environment.NewLine}";
             server.SendMessageToAllClients(message);
         }
