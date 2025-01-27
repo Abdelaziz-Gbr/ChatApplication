@@ -40,19 +40,6 @@ namespace ChatApplication
         {
             while (Working)
             {
-                string msg = await sr.ReadLineAsync();
-                //MessageBox.Show(msg);
-                if (msg != null)
-                {
-                    if (msg == "-1")
-                    {
-                        End();
-                        return;
-                    }
-                    Message RecievedMsg = Message.Parse(msg);
-                    MessageBox.Show("1");
-                    MessageRecieved(RecievedMsg);
-                }/*
                 try
                 {
                     string msg = await sr.ReadLineAsync();
@@ -65,15 +52,14 @@ namespace ChatApplication
                             return;
                         }
                         Message RecievedMsg = Message.Parse(msg);
-                        MessageBox.Show("1");
                         MessageRecieved(RecievedMsg);
                     }
                 }
-                catch (Exception e)
+                catch
                 {
-                    MessageBox.Show(e.StackTrace);
+                    //MessageBox.Show($"{name} left the chat", "Clietn left forcefully");
                     End();
-                }*/
+                }
             }
         }
 
@@ -108,6 +94,27 @@ namespace ChatApplication
         public void setId(int id)
         {
             this.id = id;
+        }
+
+        internal void SendConnectedClients(string[] strings)
+        {
+            
+            String msg = "";
+
+            foreach(string s in strings)
+            {
+                msg += s + ",";
+            }
+            msg = msg.Substring(0, msg.Length - 1);
+
+            SendMessage
+            (
+                new Message 
+                {
+                sender = "CC",
+                message = msg
+                }
+            );
         }
     }
 }

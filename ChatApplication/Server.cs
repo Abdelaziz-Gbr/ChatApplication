@@ -90,7 +90,7 @@ namespace ChatApplication
            // throw new NotImplementedException();
            OnServiceStatusChanged?.Invoke(false);
         }
-        
+
         private void ClientLoggedOut()
         {
             OnConnectedClientsUpdated?.Invoke(clientManager.getClientsName());

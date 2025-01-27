@@ -10,11 +10,14 @@ namespace ChatApplicationUser
     internal delegate void ConnectionStatusChanged(bool status);
     internal delegate void NameResponseRecieved(string message);
     internal delegate void MessageRecieved(string message);
+    internal delegate void ConnectedClientsUpdated(string[] clients);
     internal class Connection
     {
         public event ConnectionStatusChanged OnConnectionStatusChanged;
         public event NameResponseRecieved OnNameResponseRecieved;
         public event MessageRecieved OnMessageRecieved;
+        public event ConnectedClientsUpdated OnConnectedClientsUpdated;
+
         private TcpClient tcpClient;
         private int SERVER_PORT = 45000;
         private IPAddress SERVER_IP = IPAddress.Loopback;
@@ -76,13 +79,24 @@ namespace ChatApplicationUser
             {
                 string msg = await ReadFromServer();
                 string TrueMessage = ParseIncomming(msg);
-                OnMessageRecieved?.Invoke(TrueMessage);
+                
+                if(TrueMessage != null)
+                    OnMessageRecieved?.Invoke(TrueMessage);
             }
         }
 
         private string ParseIncomming(string msg)
         {
             string[] res = msg.Split('#');
+            if (res[0] == "CC")
+            {
+                //don't view the message as it shows a list of connected clients.
+                string[] connectedClients = res[2].Split(',');
+                /*foreach(string c in  connectedClients)
+                    MessageBox.Show($"{c}", $"from {name}");*/
+                OnConnectedClientsUpdated?.Invoke(connectedClients);
+                return null;
+            }
             return $"From:{res[0]} -> {res[2]}";
         }
 

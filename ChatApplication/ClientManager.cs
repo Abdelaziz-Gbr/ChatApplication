@@ -19,6 +19,7 @@ namespace ChatApplication
             client.setId(id);
             client.onStoppedWorking += RemoveClient;
             clients.Add(client);
+            SendUpdatedConnectedClientsToAllUsers();
         }
 
         internal string[] getClientsName()
@@ -46,6 +47,7 @@ namespace ChatApplication
 
             clients.RemoveAt(clientId);
             ClientLoggedOut?.Invoke();
+            SendUpdatedConnectedClientsToAllUsers();
         }
 
         internal void ForwardMessage(Message message)
@@ -85,6 +87,12 @@ namespace ChatApplication
                 if(client.getName() == name)
                     return true;
             return false;
+        }
+
+        internal void SendUpdatedConnectedClientsToAllUsers()
+        {
+            foreach (Client client in clients)
+                client.SendConnectedClients(getClientsName());
         }
     }
 }

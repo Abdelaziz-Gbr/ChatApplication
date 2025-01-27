@@ -20,6 +20,7 @@ namespace ChatApplicationUser
             connection.OnConnectionStatusChanged += ConnectionStatusUpdated;
             connection.OnNameResponseRecieved += NameResponseRecieved;
             connection.OnMessageRecieved += MessageRecieved;
+            connection.OnConnectedClientsUpdated += ConectedClientsUpdated;
         }
 
         private void btn_Connnect_Click(object sender, EventArgs e)
@@ -77,6 +78,12 @@ namespace ChatApplicationUser
         private void MessageRecieved(string msg)
         {
             txtBox_Messages.Text += $"{msg}{Environment.NewLine}";
+        }
+
+        private void ConectedClientsUpdated(string[] clients)
+        {
+            chkedList_ConnectedUsers.Items.Clear();
+            chkedList_ConnectedUsers.Items.AddRange(clients);
         }
     }
 }

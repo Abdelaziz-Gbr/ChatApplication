@@ -149,6 +149,7 @@
             this.Controls.Add(this.txtBox_Messages);
             this.Controls.Add(this.btn_Connnect);
             this.Name = "ChatWithUs_Client";
+            this.Text = "Chatting Application";
             this.ResumeLayout(false);
             this.PerformLayout();
 
