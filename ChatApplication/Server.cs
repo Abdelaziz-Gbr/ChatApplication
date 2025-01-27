@@ -11,13 +11,11 @@ using System.Windows;
 namespace ChatApplication
 {
     internal delegate void ServiceStatus(bool up);
-    internal delegate void ConnectedClientsUpdated(string[] clients);
     internal delegate void NewMessageArrived(string message);
     internal class Server
     {
         public event ServiceStatus OnServiceStatusChanged;
         public event NewMessageArrived onNewMessageArrived;
-        public event ConnectedClientsUpdated OnConnectedClientsUpdated;
         private int PORT = 45000;
         private IPAddress serverIP = IPAddress.Loopback;
         private TcpListener listener;
@@ -26,9 +24,8 @@ namespace ChatApplication
         { 
             listener = new TcpListener(serverIP, PORT);
             clientManager = new ClientManager();
-            clientManager.ClientLoggedOut += ClientLoggedOut;
         }
-
+        
         public async void StartService()
         {
             listener.Start();
@@ -44,7 +41,6 @@ namespace ChatApplication
                         Client newCLient = new Client(clientName, clientSocket);
                         newCLient.MessageRecieved += RecieveMessageFromClient;
                         clientManager.AddClient(newCLient);
-                        OnConnectedClientsUpdated?.Invoke(clientManager.getClientsName());
                     }
                 });
             }
@@ -91,10 +87,6 @@ namespace ChatApplication
            OnServiceStatusChanged?.Invoke(false);
         }
 
-        private void ClientLoggedOut()
-        {
-            OnConnectedClientsUpdated?.Invoke(clientManager.getClientsName());
-        }
 
         private void RecieveMessageFromClient(Message message)
         {
@@ -104,6 +96,11 @@ namespace ChatApplication
 
             //forward message to people meant to recieve.
             clientManager.ForwardMessage(message);
+        }
+
+        public void AddObserverToConnectClientsList(ConnctedClientsListUpdate func)
+        {
+            clientManager.OnConnectedClientsListUpdated += func;
         }
     }
 }

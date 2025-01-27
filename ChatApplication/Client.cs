@@ -43,7 +43,6 @@ namespace ChatApplication
                 try
                 {
                     string msg = await sr.ReadLineAsync();
-                    //MessageBox.Show(msg);
                     if (msg != null)
                     {
                         if (msg == "-1")
@@ -75,9 +74,9 @@ namespace ChatApplication
             {
                 sw.WriteLineAsync(msg.ToString());
             }
-            catch (Exception ex) 
+            catch
             {
-                MessageBox.Show($"Client {name} unreachable", "Attention!");
+                End();
             }
         }
 

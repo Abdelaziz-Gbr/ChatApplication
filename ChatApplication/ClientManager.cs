@@ -3,23 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ChatApplication
 {
+    internal delegate void ConnctedClientsListUpdate(string[] clients);
     internal class ClientManager
     {
         public event Action ClientLoggedOut;
+        public event ConnctedClientsListUpdate OnConnectedClientsListUpdated;
 
         private List<Client> clients = new List<Client>();
         
-        public ClientManager() { }
+        public ClientManager() 
+        {
+            OnConnectedClientsListUpdated += SendUpdatedConnectedClientsToAllUsers;
+        }
         public void AddClient(Client client)
         {
             int id = clients.Count;
             client.setId(id);
             client.onStoppedWorking += RemoveClient;
             clients.Add(client);
-            SendUpdatedConnectedClientsToAllUsers();
+            OnConnectedClientsListUpdated?.Invoke(getClientsName());
         }
 
         internal string[] getClientsName()
@@ -47,13 +53,14 @@ namespace ChatApplication
 
             clients.RemoveAt(clientId);
             ClientLoggedOut?.Invoke();
-            SendUpdatedConnectedClientsToAllUsers();
+            OnConnectedClientsListUpdated?.Invoke(getClientsName());
         }
 
         internal void ForwardMessage(Message message)
         {
             string sender = message.sender;
             string[] recievers = message.reciver;
+           // MessageBox.Show($"{recievers.Length} --- {recievers[0]} --- {recievers[1]}");
             switch(message.IsMessageToAll())
             {
                 case true:
@@ -89,10 +96,10 @@ namespace ChatApplication
             return false;
         }
 
-        internal void SendUpdatedConnectedClientsToAllUsers()
+        internal void SendUpdatedConnectedClientsToAllUsers(string[] connectedClients)
         {
             foreach (Client client in clients)
-                client.SendConnectedClients(getClientsName());
+                client.SendConnectedClients(connectedClients);
         }
     }
 }

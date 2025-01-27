@@ -90,6 +90,7 @@
             this.btn_SendSelected.TabIndex = 4;
             this.btn_SendSelected.Text = "Send Selected";
             this.btn_SendSelected.UseVisualStyleBackColor = true;
+            this.btn_SendSelected.Click += new System.EventHandler(this.btn_SendSelected_Click);
             // 
             // label1
             // 
@@ -104,6 +105,7 @@
             // 
             // chkedList_ConnectedUsers
             // 
+            this.chkedList_ConnectedUsers.CheckOnClick = true;
             this.chkedList_ConnectedUsers.FormattingEnabled = true;
             this.chkedList_ConnectedUsers.Location = new System.Drawing.Point(633, 61);
             this.chkedList_ConnectedUsers.Name = "chkedList_ConnectedUsers";

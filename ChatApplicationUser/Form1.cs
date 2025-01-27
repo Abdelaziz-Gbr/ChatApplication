@@ -58,10 +58,16 @@ namespace ChatApplicationUser
 
         private void btn_SendToAll_Click(object sender, EventArgs e)
         {
+            string message = getMessageText();
+            connection.SendMessage(message, null);
+        }
+
+        private string getMessageText()
+        {
             string message = txtBox_MessageInput.Text;
             txtBox_MessageInput.Clear();
             txtBox_Messages.Text += $"me({connection.getName()}) -> {message}{Environment.NewLine}";
-            connection.SendMessageToAll(message);
+            return message;
         }
 
         private void NameResponseRecieved(string res)
@@ -84,6 +90,12 @@ namespace ChatApplicationUser
         {
             chkedList_ConnectedUsers.Items.Clear();
             chkedList_ConnectedUsers.Items.AddRange(clients);
+        }
+
+        private void btn_SendSelected_Click(object sender, EventArgs e)
+        {
+            string[] selectedClient = chkedList_ConnectedUsers.SelectedItems.Cast<string>().ToArray();
+            connection.SendMessage(getMessageText(), selectedClient);
         }
     }
 }

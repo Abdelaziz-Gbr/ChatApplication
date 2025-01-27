@@ -29,8 +29,6 @@ namespace ChatApplication
                 res.reciver = msgSplit[1].Split(',');
             else 
                 res.reciver = null;
-           /* res.reciver= string.IsNullOrEmpty(msgSplit[1]) ? null : msgSplit[1].Split(',');
-            MessageBox.Show($"length{msgSplit[1].Length}, null or empty? {string.IsNullOrEmpty(msgSplit[1])}");*/
             res.message = msgSplit[2];
             return res;
         }

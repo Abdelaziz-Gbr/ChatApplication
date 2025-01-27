@@ -17,8 +17,8 @@ namespace ChatApplication
         {
             InitializeComponent();
             server.OnServiceStatusChanged += OnServiceStatusChanged;
-            server.OnConnectedClientsUpdated += ClientConnected;
             server.onNewMessageArrived += NewMessageArrived;
+            server.AddObserverToConnectClientsList(ConnectedClientsUpdated);
         }
 
         private void btn_StartService_Click(object sender, EventArgs e)
@@ -56,7 +56,7 @@ namespace ChatApplication
             btn_StartService.Visible = true;
         }
 
-        private void ClientConnected(string[] clients)
+        private void ConnectedClientsUpdated(string[] clients)
         {
             ((ListBox)chkedList_ConnectedUsers).DataSource = null;
             ((ListBox)chkedList_ConnectedUsers).DataSource = clients;
@@ -74,5 +74,6 @@ namespace ChatApplication
             txtBox_MessagesBox.Text += $"me(admin) -> {message}{Environment.NewLine}";
             server.SendMessageToAllClients(message);
         }
+
     }
 }

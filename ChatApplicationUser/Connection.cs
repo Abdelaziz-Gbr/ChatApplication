@@ -24,6 +24,7 @@ namespace ChatApplicationUser
         private StreamReader streamReader;
         private StreamWriter streamWriter;
 
+        private bool online = false;
         private string name;
         public Connection() 
         {
@@ -34,6 +35,7 @@ namespace ChatApplicationUser
             try
             {
                 tcpClient.Connect(SERVER_IP, SERVER_PORT);
+                online = true;
             }
             catch 
             {
@@ -49,6 +51,7 @@ namespace ChatApplicationUser
         public void Close()
         {
             WriteToServer("-1");
+            online = false;
             if (tcpClient != null)
             {
                 tcpClient.Close();
@@ -57,9 +60,13 @@ namespace ChatApplicationUser
             }
         }
 
-        internal void SendMessageToAll(string message)
+        internal void SendMessage(string message, string[] clients)
         {
-            WriteToServer($"{name}##{message}");
+            string clientsReady = "";
+            if(clients != null) 
+                foreach(string client in clients)
+                    clientsReady += client;
+            WriteToServer($"{name}#{clientsReady}#{message}");
         }
 
         internal async Task SendNameAsync(string name)
@@ -75,7 +82,7 @@ namespace ChatApplicationUser
 
         private async void RecieveMessages()
         {
-            while(true)
+            while(online)
             {
                 string msg = await ReadFromServer();
                 string TrueMessage = ParseIncomming(msg);
