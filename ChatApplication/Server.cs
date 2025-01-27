@@ -99,7 +99,6 @@ namespace ChatApplication
         private void RecieveMessageFromClient(Message message)
         {
             //only print messages that's meant for the admin to see.
-            MessageBox.Show("got here");
             if (message.IsMessageToAdmin() || message.IsMessageToAll())
                 onNewMessageArrived?.Invoke($"From:{message.sender} -> {message.message}");
 
