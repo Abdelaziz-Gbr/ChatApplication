@@ -11,7 +11,7 @@ using System.Windows.Interop;
 namespace ChatApplication
 {
     internal delegate void RecievedMessage(Message msg);
-    internal delegate void OnStopWorking(int id);
+    internal delegate void OnStopWorking(string clientName);
     internal class Client
     {
         public event RecievedMessage MessageRecieved;
@@ -21,7 +21,6 @@ namespace ChatApplication
         private StreamWriter sw;
         private bool Working = true;
         public event OnStopWorking onStoppedWorking;
-        private int id;
 
         public ClientManager Manager { get; set; }
 
@@ -56,16 +55,18 @@ namespace ChatApplication
                 }
                 catch
                 {
-                    //MessageBox.Show($"{name} left the chat", "Clietn left forcefully");
                     End();
                 }
             }
         }
 
-        private void End()
+        public void End()
         {
             Working = false;
-            onStoppedWorking?.Invoke(id);
+            socket.Close();
+            sr.Close();
+            sw.Close();
+            onStoppedWorking(name);
         }
 
         public void SendMessage(Message msg)
@@ -85,15 +86,6 @@ namespace ChatApplication
             return name;
         }
 
-        public void Stop()
-        {
-            Working = false;
-        }
-
-        public void setId(int id)
-        {
-            this.id = id;
-        }
 
         internal void SendConnectedClients(string[] strings)
         {
@@ -114,6 +106,18 @@ namespace ChatApplication
                 message = msg
                 }
             );
+        }
+
+        internal void SendMessageQuitMessage()
+        {
+            try
+            {
+                sw.WriteLineAsync("-1");
+            }
+            catch
+            {
+                End();
+            }
         }
     }
 }

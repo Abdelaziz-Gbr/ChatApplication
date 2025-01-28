@@ -21,8 +21,6 @@ namespace ChatApplication
         }
         public void AddClient(Client client)
         {
-            int id = clients.Count;
-            client.setId(id);
             client.onStoppedWorking += RemoveClient;
             clients.Add(client);
             OnConnectedClientsListUpdated?.Invoke(getClientsName());
@@ -48,19 +46,29 @@ namespace ChatApplication
                 client.SendMessage(msg);
         }
 
-        public void RemoveClient(int clientId)
+        public void RemoveClient(string name)
         {
 
-            clients.RemoveAt(clientId);
+            clients.RemoveAt(GetClientIndex(name));
             ClientLoggedOut?.Invoke();
             OnConnectedClientsListUpdated?.Invoke(getClientsName());
+        }
+
+        private int GetClientIndex(string name)
+        {
+            int i = 0;
+            for (; i < clients.Count; i++)
+            {
+                if (clients[i].getName() == name)
+                    break;
+            }
+            return i;
         }
 
         internal void ForwardMessage(Message message)
         {
             string sender = message.sender;
             string[] recievers = message.reciver;
-           // MessageBox.Show($"{recievers.Length} --- {recievers[0]} --- {recievers[1]}");
             switch(message.IsMessageToAll())
             {
                 case true:
@@ -100,6 +108,18 @@ namespace ChatApplication
         {
             foreach (Client client in clients)
                 client.SendConnectedClients(connectedClients);
+        }
+
+        internal void Quit()
+        {
+            foreach (Client client in clients)
+                client.SendMessageQuitMessage();
+            Task.Delay(1000);
+            foreach (Client client in clients)
+                client.End();
+            clients.Clear();
+
+            OnConnectedClientsListUpdated(getClientsName());
         }
     }
 }

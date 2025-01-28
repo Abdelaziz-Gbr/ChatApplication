@@ -44,14 +44,15 @@ namespace ChatApplication
                 lbl_status.ForeColor = Color.Red;
                 btn_StartService.Visible = true;
                 btn_StopService.Visible = false;
+                ConnectedClientsUpdated(new string[0]);
             }
 
         }
 
         private void btn_StopService_Click(object sender, EventArgs e)
         {
-            //todo tell each client you going to stop
-            server.stop();
+            //todo tell each client you going to Stop
+            server.Stop();
             btn_StopService.Visible = false;
             btn_StartService.Visible = true;
         }

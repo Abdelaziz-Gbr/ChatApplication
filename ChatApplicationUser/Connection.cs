@@ -48,15 +48,23 @@ namespace ChatApplicationUser
             OnConnectionStatusChanged?.Invoke(true);
         }
 
-        public void Close()
+        public void EndConnectionWithServer()
         {
-            WriteToServer("-1");
-            online = false;
-            if (tcpClient != null)
+            WriteToServerSync("-1");
+            ConnectionEnded();
+        }
+
+        private void WriteToServerSync(string message)
+        {
+            try
             {
-                tcpClient.Close();
-                tcpClient = null;
-                OnConnectionStatusChanged?.Invoke(false);
+                streamWriter?.WriteLine(message);
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't connect to the server.", "Error1");
+                ConnectionEnded();
+                return;
             }
         }
 
@@ -84,12 +92,31 @@ namespace ChatApplicationUser
         {
             while(online)
             {
-                string msg = await ReadFromServer();
-                string TrueMessage = ParseIncomming(msg);
-                
-                if(TrueMessage != null)
+                try
+                {
+                    string serverResponse = await streamReader.ReadLineAsync();
+                    if (serverResponse == "-1")
+                    {
+                        ConnectionEnded();
+                        break;
+                    }
+                    string TrueMessage = ParseIncomming(serverResponse);
                     OnMessageRecieved?.Invoke(TrueMessage);
+                }
+                catch
+                {
+                    ConnectionEnded();
+                }
+                
             }
+        }
+
+        private void ConnectionEnded()
+        {
+            OnConnectionStatusChanged(online= false);
+            tcpClient.Close();
+            streamReader.Close();
+            streamWriter.Close();
         }
 
         private string ParseIncomming(string msg)
@@ -99,8 +126,7 @@ namespace ChatApplicationUser
             {
                 //don't view the message as it shows a list of connected clients.
                 string[] connectedClients = res[2].Split(',');
-                /*foreach(string c in  connectedClients)
-                    MessageBox.Show($"{c}", $"from {name}");*/
+
                 OnConnectedClientsUpdated?.Invoke(connectedClients);
                 return null;
             }
@@ -115,8 +141,8 @@ namespace ChatApplicationUser
             }
             catch
             {
-                MessageBox.Show("Couldn't connect to the server.", "Error");
-                OnConnectionStatusChanged?.Invoke(false);
+                MessageBox.Show("Couldn't connect to the server.", "Error1");
+                ConnectionEnded();
                 return;
             }
         }
@@ -129,7 +155,7 @@ namespace ChatApplicationUser
             }
             catch
             {
-                MessageBox.Show("Couldn't connect to the server.", "Error");
+                MessageBox.Show("Couldn't connect to the server.", "");
                 OnConnectionStatusChanged?.Invoke(false);
                 return null;
             }
